@@ -1,4 +1,5 @@
 const Vue = require('./nativescript-vue')
+const VueRouter = require('vue-router')
 
 Vue.config.silent = false
 Vue.config.debug = true
@@ -46,9 +47,9 @@ const LoginSCN__LoginPage = {
   }
 }
 
-Vue.use(Vue.Router)
+Vue.use(VueRouter)
 
-const router = new Vue.Router({
+const router = new VueRouter({
   mode: { History: Vue.History },
   routes: [
     { path: '/', component: LoginSCN__LoadingPage },
