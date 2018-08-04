@@ -3,9 +3,12 @@ import { isPlainObject } from 'shared/util'
 
 const operations = ['push', 'replace', 'go']
 
-export class History {
-  constructor(router, base) {
-    super(router, base)
+let mode
+
+export default mode = {
+  name: 'NativeScriptHistory',
+
+  init(router) {
     this.router = router
     this.operation = 'push'
     this.isGoingBack = false
@@ -21,18 +24,18 @@ export class History {
     }
 
     operations.forEach(name => {
-      History.prototype[name] = (...args) => {
+      this[name] = (...args) => {
         if (args.length > 1) {
-          ;({ args, entry: this.currentEntry } = this._extractEntry(args))
+          ({ args, entry: this.currentEntry } = this._extractEntry(args))
         } else if (name === 'go') {
           this.isGoingBack = args[0] < 0
         }
 
         this.operation = name
-        super[name](...args)
+        this.callMethod(name, ...args)
       }
     })
-  }
+  },
 
   _extractEntry(args) {
     let entry
