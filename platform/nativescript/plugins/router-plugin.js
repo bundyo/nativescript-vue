@@ -13,6 +13,9 @@ export default (mode = {
       constructor(router, base) {
         super(router, base)
         this.router = router
+        this.router.cacheSize = router.options.cacheSize
+                                ? Math.max(router.options.cacheSize, 2)
+                                : 10 // default page cache size
         this.operation = 'push'
         this.isGoingBack = false
 

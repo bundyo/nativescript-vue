@@ -1,6 +1,8 @@
 export const PAGE_REF = '__vuePageRef__'
 import { ios } from 'tns-core-modules/application'
 
+const cache = new Map()
+
 export default {
   render(h) {
     return h(
@@ -14,7 +16,7 @@ export default {
   },
   created() {
     if (this.$router) {
-      this.$vnode.parent.data.keepAlive = true
+      this.$parent.$vnode.data.keepAlive = true
     }
   },
   mounted() {
@@ -41,14 +43,32 @@ export default {
           history.index -= 1
           history.updateRoute(history.stack[history.index])
         }
-
-        this.$vnode.parent.data.keepAlive = false
-        this.$parent.$destroy()
       }
+
+      this._rollCacheQueue(this.$parent)
     }
     this.$el.nativeView.on('navigatedFrom', handler)
   },
   methods: {
+    _rollCacheQueue(instance) {
+      if (!this.$router) {
+        return
+      }
+
+      cache.set(this.$route.path, instance)
+
+      if (cache.size > this.$router.cacheSize) {
+        const entries = Array.from(cache.entries())
+
+        instance = entries.shift()
+
+        if (cache.delete(instance[0])) {
+          instance[1].$vnode.data.keepAlive = false
+          instance[1].$destroy()
+        }
+      }
+    },
+
     _findParentFrame() {
       let frame = this.$parent
 
